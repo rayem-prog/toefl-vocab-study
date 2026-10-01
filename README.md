@@ -12,7 +12,7 @@
 
 ## 云端配置与发布
 
-使用 Sites 官方构建及私有发布流程。DB 是 D1 绑定；drizzle 中已发布迁移不可重写，后续变化追加迁移。运行配置为 PHOTO_VISION_ENDPOINT、PHOTO_VISION_MODEL 和秘密 PHOTO_VISION_API_KEY。前端只读取配置状态。临时 BOOTSTRAP_TOKEN 仅供首次受控迁移，迁移后删除并重新部署。
+使用 Sites 官方构建及私有发布流程。DB 是 D1 绑定；drizzle 中已发布迁移不可重写，后续变化追加迁移。运行配置为 PHOTO_VISION_ENDPOINT、PHOTO_VISION_MODEL 和秘密 PHOTO_VISION_API_KEY。前端只读取配置状态。首次迁移已完成，临时迁移代码与凭证均已移除。
 
 重新部署不会初始化学习数据。回滚代码使用平台已保存版本；数据恢复先完整导出，再通过同步页合并备份。不得使用旧客户端全量覆盖云端数据。生产后台不得接受客户端自行声明的用户身份，使用平台注入的认证信息。
 
