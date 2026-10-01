@@ -6,7 +6,7 @@ test('vision request works when runtime has no AbortSignal.timeout',async()=>{
  const original=AbortSignal.timeout;AbortSignal.timeout=undefined;
  try{
   const image='data:image/png;base64,'+Buffer.from([137,80,78,71,13,10,26,10,0,0,0,13,73,72,68,82,0,0,0,1,0,0,0,1,...Array(30).fill(0)]).toString('base64');
-  const result=await vision.recognize({PHOTO_VISION_ENDPOINT:'https://example.test',PHOTO_VISION_MODEL:'vision',PHOTO_VISION_API_KEY:'test-secret'},[{id:'page',data_url:image}],async()=>Response.json({choices:[{message:{content:JSON.stringify({words:[],warnings:[],unresolved:[]})}}]}));
+  const result=await vision.recognize({PHOTO_VISION_ENDPOINT:'https://example.test',PHOTO_VISION_MODEL:'vision',PHOTO_VISION_API_KEY:'test-secret'},[{id:'page',data_url:image}],async(url,options)=>{assert.equal(options.redirect,'manual');return Response.json({choices:[{message:{content:JSON.stringify({words:[],warnings:[],unresolved:[]})}}]});});
   assert.equal(result.words.length,0);
  }finally{AbortSignal.timeout=original;}
 });
