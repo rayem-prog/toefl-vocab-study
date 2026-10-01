@@ -1,0 +1,42 @@
+<section id="view-photo" class="view-page">
+  <div class="page-header"><div><p class="photo-eyebrow">词汇书 · 主词专练</p><h2 class="page-title">📷 拍照测词</h2></div><button class="btn btn-outline" onclick="PhotoUI.showUpload()">＋ 新拍一批</button></div>
+  <ol class="photo-steps" aria-label="学习步骤"><li>1 拍词汇书</li><li>2 校对主词</li><li>3 测一遍</li><li>4 单独背生词</li></ol>
+  <p id="photo-message" class="photo-message" role="status" aria-live="polite" hidden></p>
+  <details class="card photo-settings"><summary>识别设置 <span id="photo-config-status">正在检查…</span></summary>
+    <p class="photo-muted">在服务器本机打开 localhost 页面设置。密钥只保存在服务器，手机可直接使用已配置的服务。</p>
+    <div class="photo-settings-grid"><label>图片模型接口地址<input id="photo-endpoint" class="input-field" placeholder="https://服务商地址/v1" autocomplete="off"></label><label>视觉模型名称<input id="photo-model" class="input-field" placeholder="填写服务商提供的图片模型名" autocomplete="off"></label></div>
+    <label>API Key <input id="photo-api-key" class="input-field" type="password" placeholder="留空保留已保存的密钥" autocomplete="new-password"></label>
+    <div class="photo-actions"><button class="btn btn-secondary" id="photo-save-config" onclick="PhotoUI.saveConfig()">保存识别设置</button><button class="btn btn-outline" onclick="PhotoUI.loadConfig()">检查设置</button></div>
+  </details>
+  <div id="photo-upload" class="card">
+    <h3>拍下要测的词汇书页</h3><p class="photo-muted">只提取每条词条的主词。尽量拍清整页，避免反光；最多 8 张合成一批。</p>
+    <div class="photo-actions"><label class="btn btn-primary photo-file-label">📷 拍一张<input id="photo-camera-input" type="file" accept="image/*" capture="environment" onchange="PhotoUI.addFiles(this.files);this.value=''" hidden></label><label class="btn btn-outline photo-file-label">选择照片<input id="photo-file-input" type="file" accept="image/*" multiple onchange="PhotoUI.addFiles(this.files);this.value=''" hidden></label></div>
+    <div id="photo-drop-zone" tabindex="0" class="photo-drop-zone">也可以把照片拖到这里</div>
+    <div id="photo-images" class="photo-images"></div>
+    <div class="photo-actions"><button id="photo-recognize" class="btn btn-primary" disabled onclick="PhotoUI.recognize()">识别照片中的主词</button><button id="photo-cancel" class="btn btn-outline" hidden onclick="PhotoUI.cancelRecognition()">取消识别</button></div>
+    <div id="photo-preview" hidden></div>
+  </div>
+  <div class="card photo-batch-bar"><label>我的照片批次<select id="photo-batch-select" class="input-field" onchange="PhotoUI.selectBatch(this.value)"><option value="">还没有照片批次</option></select></label><span id="photo-batch-count" class="photo-muted"></span></div>
+  <div id="photo-learning" hidden>
+    <div class="card" id="photo-test-card">
+      <div class="photo-section-title"><h3>本批次测试</h3><span id="photo-test-progress" class="photo-counter"></span></div>
+      <div id="photo-test-setup" class="photo-actions"><select id="photo-test-mode" aria-label="测试题型" class="input-field"><option value="flash">看英文回忆中文</option><option value="spell">看中文拼写英文</option></select><button id="photo-start-test" class="btn btn-primary" onclick="PhotoUI.startTest()">开始测试全部主词</button></div>
+      <p class="photo-muted" id="photo-test-description">每个词测一次，答完单独整理待背词；可以退出后继续。</p>
+      <div id="photo-question" hidden>
+        <p id="photo-question-label" class="photo-muted"></p><h3 id="photo-question-word" class="photo-display"></h3>
+        <div id="photo-flash-controls" class="photo-actions"><button id="photo-choose-known" class="btn btn-success" onclick="PhotoUI.reveal('known')">记得</button><button id="photo-choose-vague" class="btn btn-secondary" onclick="PhotoUI.reveal('vague')">模糊</button><button id="photo-choose-unknown" class="btn btn-danger" onclick="PhotoUI.reveal('unknown')">不认识</button></div>
+        <div id="photo-spell-controls"><label class="photo-muted" for="photo-spell-input">输入完整英文单词</label><div class="photo-actions"><input id="photo-spell-input" class="input-field" autocomplete="off" autocapitalize="none" spellcheck="false" onkeydown="if(event.key==='Enter'){event.preventDefault();PhotoUI.submitSpell()}"><button id="photo-submit-spell" class="btn btn-primary" onclick="PhotoUI.submitSpell()">核对答案</button></div></div>
+        <div id="photo-answer" class="photo-answer" hidden><div class="photo-section-title"><strong id="photo-answer-word"></strong><button class="btn btn-outline" onclick="PhotoUI.speakCurrent()">🔊 发音</button></div><p id="photo-answer-phonetic" class="photo-muted"></p><p id="photo-answer-meaning"></p><p id="photo-spell-feedback" class="photo-muted"></p><label>核对后确认结果<select id="photo-correct-result" class="input-field"><option value="known">记得 / 答对</option><option value="vague">记忆模糊</option><option value="unknown">不认识</option><option value="wrong">答错</option><option value="guessed">猜中，仍需背诵</option></select></label><button id="photo-confirm-answer" class="btn btn-primary" onclick="PhotoUI.confirmAnswer()">确认结果，下一词</button></div>
+        <button id="photo-skip" class="btn btn-outline" onclick="PhotoUI.skip()">暂时跳过，列入未测</button>
+      </div>
+      <div id="photo-test-done" hidden><p id="photo-test-summary"></p><button class="btn btn-outline" onclick="PhotoUI.showResults()">查看本次待背清单 ↓</button></div>
+    </div>
+    <div id="photo-study" class="card" hidden><div class="photo-section-title"><h3>背诵待背词</h3><span id="photo-study-progress" class="photo-counter"></span></div><h3 id="photo-study-word" class="photo-display"></h3><button class="btn btn-outline" onclick="PhotoUI.speakStudy()">🔊 发音</button><div id="photo-study-answer" class="photo-answer" hidden><p id="photo-study-phonetic" class="photo-muted"></p><p id="photo-study-meaning"></p></div><div class="photo-actions"><button id="photo-study-reveal" class="btn btn-primary" onclick="PhotoUI.revealStudy()">回忆后查看释义</button><button id="photo-study-next" class="btn btn-success" hidden onclick="PhotoUI.nextStudy()">再回忆一次，下一词</button><button class="btn btn-outline" onclick="PhotoUI.finishStudy()">结束背诵</button></div></div>
+    <div id="photo-results-card" class="card"><div class="photo-section-title"><h3>本批次待背清单</h3><span id="photo-pending-count" class="photo-counter"></span></div><p id="photo-overview" class="photo-muted"></p>
+      <div class="photo-actions"><button id="photo-study-start" class="btn btn-primary" onclick="PhotoUI.startStudy()">翻卡背诵待背词</button><button id="photo-retest" class="btn btn-secondary" onclick="PhotoUI.startTest(true)">只重测待背词</button><button id="photo-queue-review" class="btn btn-outline" onclick="PhotoUI.queueReview()">加入今日复习</button></div>
+      <div class="photo-actions"><label>显示<select id="photo-result-filter" class="input-field" onchange="PhotoUI.renderResults()"><option value="pending">需要背诵</option><option value="untested">尚未测试</option><option value="all">本次全部主词</option><option value="known">已记得 / 已巩固</option></select></label><button id="photo-test-untested" class="btn btn-outline" onclick="PhotoUI.testUntested()">测试未测词</button><button class="btn btn-outline" onclick="PhotoUI.openReview()">进入今日复习</button></div>
+      <div id="photo-results"></div>
+      <details class="photo-history"><summary>本批次历次测试</summary><div id="photo-session-history"></div></details>
+    </div>
+  </div>
+</section>
