@@ -19,6 +19,7 @@ const PhotoUI={
   async request(path,body,signal){
     const cfg=getCloudSettings();const base=(location.protocol.startsWith('http')?location.origin:cfg.serverUrl).replace(/\/+$/,'');
     const headers={'Content-Type':'application/json'};if(cfg.token)headers['X-Sync-Token']=cfg.token;
+    if(window.CLOUD_ACCOUNT?.userId)headers['X-Toefl-Account']=window.CLOUD_ACCOUNT.userId;
     const control=signal?null:new AbortController();const timeout=control?setTimeout(()=>control.abort(),15000):null;
     try{const r=await fetch(base+'/api/photo/'+path,{method:body===undefined?'GET':'POST',headers,body:body===undefined?undefined:JSON.stringify(body),signal:signal||control.signal});
       let data;try{data=await r.json();}catch{throw Error('服务器未提供图片识别接口，请启动此文件夹的新版 server.py');}

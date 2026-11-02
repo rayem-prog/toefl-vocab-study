@@ -8,6 +8,13 @@
       "when": 1790817334634,
       "tag": "0000_sudden_slipstream",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1793624413162,
+      "tag": "0001_fuzzy_bloodscream",
+      "breakpoints": true
     }
   ]
 }
